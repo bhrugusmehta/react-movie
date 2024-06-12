@@ -1,25 +1,63 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import axios from "axios";
+import Search from "./Search";
+import "./App.css";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [movie, setMovie] = useState({
+		s: "Kungfu",
+		results: [],
+	});
+
+	const apiurl = "https://www.omdbapi.com/?apikey=41034404";
+
+	const searchInput = (e) => {
+		let s = e.target.value;
+		setMovie((prevState) => {
+			return { ...prevState, s: s };
+		});
+	};
+
+	const search = (e) => {
+		axios(apiurl + "&s=" + movie.s).then(
+			({ data }) => {
+				let results = data.Search;
+				setMovie((prevState) => {
+					return {
+						...prevState,
+						results: results,
+					};
+				});
+			}
+		);
+	};
+
+	return (
+		<div className="App">
+			<header className="App-header">
+				<h1>Movie app</h1>
+			</header>
+				<Search
+					searchInput={searchInput}
+					search={search}
+				/>
+
+				<div className="container">
+					{movie.results.map((e) => (
+						<div className="item">
+							<img
+								style={{ width: "100px" }}
+								src={e.Poster}
+							/>
+							<h3 style={{ color: "black" }}>
+								{e.Title}
+							</h3>
+						</div>
+					))}
+				</div>
+				
+		</div>
+	);
 }
 
 export default App;
